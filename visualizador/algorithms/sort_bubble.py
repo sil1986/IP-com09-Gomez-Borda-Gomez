@@ -20,4 +20,14 @@ def step():
     # 4) Devolver {"a": a, "b": b, "swap": swap, "done": False}.
     #
     # Cuando no queden pasos, devolvé {"done": True}.
+    for i in range(n):
+        for j in range(0,n-i-1):
+            a=j
+            b=j+1
+            swap=False
+            if items[a]>items[b]:
+                items[a],items[b]=items[b],items[a]
+                swap=True
+                return {"a": a, "b": b, "swap" :swap, "done": False}
+            
     return {"done": True}
