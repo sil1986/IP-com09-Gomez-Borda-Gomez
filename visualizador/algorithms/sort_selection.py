@@ -1,12 +1,10 @@
-"""# Contrato: init(vals), step() -> {"a": int, "b": int, "swap": bool, "done": bool}
-
+# Contrato: init(vals), step() -> {"a": int, "b": int, "swap": bool, "done": bool}
 items = []
 n = 0
 i = 0          # cabeza de la parte no ordenada
 j = 0          # cursor que recorre y busca el mínimo
 min_idx = 0    # índice del mínimo de la pasada actual
 fase = "buscar"  # "buscar" | "swap"
-
 def init(vals):
     global items, n, i, j, min_idx, fase
     items = list(vals)
@@ -15,7 +13,6 @@ def init(vals):
     j = i + 1
     min_idx = i
     fase = "buscar"
-
 def step():
     # TODO:
     # - Fase "buscar": comparar j con min_idx, actualizar min_idx, avanzar j.
@@ -25,88 +22,69 @@ def step():
     #   Luego avanzar i, reiniciar j=i+1 y min_idx=i, volver a "buscar".
     #
     # Cuando i llegue al final, devolvé {"done": True}.
-    return {"done": True}"""
+    return {"done": True}
 
 ##aqui empece a alterar el sort_selection.py
-items = []  
+items = []
 n = 0
-i = 0       # El índice del inicio de la parte no ordenada
-j = 0       # El índice que recorre la parte no ordenada para buscar el mínimo
-min_idx = 0
-fase="buscar"  # Fase actual: "buscar" o "swap"
+i = 0         # Cabeza de la parte no ordenada
+j = 0         # Cursor que recorre y busca el mínimo
+min_idx = 0   # Índice del mínimo de la pasada actual
+fase = "buscar" # Fases: "buscar" o "swap"
 
 def init(vals):
-    """
-    Inicializa el algoritmo de Ordenamiento por Selección.
-    """
+    """Inicializa la lista y las variables de estado."""
     global items, n, i, j, min_idx, fase
     
-    # 1. Guardar copia e inicializar n (Contrato)
     items = list(vals)
     n = len(items)
     
-    # 2. Inicializar punteros/estado interno
     i = 0
-    j= 1
-    min_idx = i
+    j = 1
+    min_idx = 0
     fase = "buscar"
 
 def step():
-    """
-    Ejecuta un único micro-paso del Selection Sort.
-    """
+    """Ejecuta un único micro-paso del Selection Sort."""
     global items, n, i, j, min_idx, fase
     
-    # 1. CONDICIÓN DE PARADA: Si i ha llegado al final (todo ordenado)
+    # 1. CONDICIÓN DE PARADA FINAL: (Ajustado para devolver solo {"done": True})
     if i >= n - 1:
-        # Devuelve done=True para indicar al visualizador que terminó
-        return {"a": 0, "b": 0, "swap": False, "done": True}
+        return {"done": True} 
+
     if fase == "buscar":
-
-    # -----------------------------------------------
-    # FASE 1: Búsqueda del Mínimo
-    # -----------------------------------------------
-     if j < n:
-        # Punteros a devolver: Comparamos j con min_idx
-        puntero_a = j
-        puntero_b = min_idx
-        swap_hecho = False
-
-        # Comparación: Actualizamos min_idx si encontramos un valor más pequeño
-        if items[j] < items[min_idx]:
-            min_idx = j # Nuevo mínimo encontrado
-            
-        j += 1 # Avanzamos el puntero de búsqueda (j)
+        # --- FASE 1: BUSCAR EL MÍNIMO ---
         
-        # Devolvemos la comparación (no hay swap en esta fase)
-        return {"a": puntero_a, "b": puntero_b, "swap": swap_hecho, "done": False}
-     
-    else:
-        fase = "swap"
-        return step() # Llamada recursiva para entrar en la fase de swap
+        if j < n:
+            puntero_a = j
+            puntero_b = min_idx
+            
+            if items[j] < items[min_idx]:
+                min_idx = j
+            
+            j += 1
+            
+            return {"a": puntero_a, "b": puntero_b, "swap": False, "done": False}
+        
+        else: # Si j LLEGÓ AL FINAL:
+            fase = "swap"
+            return step()
     
-    if fase == "swap":
-    # -----------------------------------------------
-    # FASE 2: Intercambio (Swap) y Reinicio
-    # -----------------------------------------------
-            # Punteros a devolver: i y min_idx
+    elif fase == "swap":
+        # --- FASE 2: REALIZAR INTERCAMBIO ---
+        
         puntero_a = i
         puntero_b = min_idx
         swap_hecho = False
         
-        # Realizar el intercambio solo si el mínimo no es el elemento actual (i)
         if i != min_idx:
-            # Realiza el SWAP en la lista (Regla del Contrato)
             items[i], items[min_idx] = items[min_idx], items[i]
             swap_hecho = True
-        else:
-            swap_hecho = False
             
-        # Preparar para la siguiente pasada (mover la frontera de la parte ordenada)
+        # Preparar para la siguiente pasada
         i += 1
-        j = i + 1 # Reiniciar el puntero de búsqueda para la nueva pasada
+        j = i + 1
         min_idx = i
-        fase= "buscar" # Volver a la fase de búsqueda
+        fase = "buscar"
         
-        # Devolvemos el resultado del intercambio
         return {"a": puntero_a, "b": puntero_b, "swap": swap_hecho, "done": False}
