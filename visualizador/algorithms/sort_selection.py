@@ -33,7 +33,7 @@ min_idx = 0   # Índice del mínimo de la pasada actual
 fase = "buscar" # Fases: "buscar" o "swap"
 
 def init(vals):
-    """Inicializa la lista y las variables de estado."""
+    
     global items, n, i, j, min_idx, fase
     
     items = list(vals)
@@ -45,15 +45,15 @@ def init(vals):
     fase = "buscar"
 
 def step():
-    """Ejecuta un único micro-paso del Selection Sort."""
+
     global items, n, i, j, min_idx, fase
     
-    # 1. CONDICIÓN DE PARADA FINAL: (Ajustado para devolver solo {"done": True})
+    
     if i >= n - 1:
         return {"done": True} 
 
     if fase == "buscar":
-        # --- FASE 1: BUSCAR EL MÍNIMO ---
+        
         
         if j < n:
             puntero_a = j
@@ -66,12 +66,12 @@ def step():
             
             return {"a": puntero_a, "b": puntero_b, "swap": False, "done": False}
         
-        else: # Si j LLEGÓ AL FINAL:
+        else: 
             fase = "swap"
             return step()
     
     elif fase == "swap":
-        # --- FASE 2: REALIZAR INTERCAMBIO ---
+        
         
         puntero_a = i
         puntero_b = min_idx
