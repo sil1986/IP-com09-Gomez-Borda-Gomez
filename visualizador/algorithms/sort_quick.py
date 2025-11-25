@@ -1,72 +1,56 @@
 items = []
-n = 0
-i = 0          # cabeza de la parte no ordenada
-j = 0          # cursor que recorre y busca el mínimo
-pivote = 0    # índice del mínimo de la pasada actual
-fase = "buscar"  # "buscar" | "swap"
+stack = []       # pila de subrangos pendientes
+i = j = 0
+pivote = None
+fase = "buscar"
+
 def init(vals):
-    global items, n, i, j, pivote, fase
+    global items, stack, i, j, pivote, fase
     items = list(vals)
-    n = len(items)
-    i = 0
-    j = i + 1
-    pivote = items[n/2]   # Pivote el de la derecha
+    stack = [(0, len(items)-1)]   # rango inicial completo
+    i = j = 0
+    pivote = None
     fase = "buscar"
 
-
-
-
 def step():
+    global items, stack, i, j, pivote, fase
 
+    # Caso base: si no quedan subrangos
+    if not stack:
+        return {"done": True}
 
-    global items, n, i, j, pivote, fase
-   
-    # Caso base: si ya ordenamos todo
-    if n<=1:
-        return  {"done": True}
-    elif fase == "buscar":
-         pivote = items[n/2]  # Elegir el pivote
-         # Buscar el siguiente elemento menor que el pivote
-         while j < n:
-            if items[j] < pivote:
-                menores = []
-                mayores = []
-                for k in range(n):
-                    if items[k] < pivote:
-                        menores.append(items[k])
-                    elif items[k] > pivote:
-                        mayores.append(items[k])    
-               
+    # Tomar el subrango actual
+    left, right = stack[-1]
 
+    if left >= right:
+        stack.pop()
+        return {"done": False}
 
-                fase = "swap"
-                return {"a": j, "b": n-1, "swap": True, "done": False}
-            j += 1
-            # Si no hay más elementos menores, pasar a swap
-            # pero sin hacer swap
-            # return {"a": j-1, "b": n-1, "swap": False, "done": False}
-         fase = "swap"  
-         return step()
-    elif fase == "swap":
-        # Preparar para la siguiente pasada
-        n -= 1
-        i = 0
-        j = i + 1
-    while i < n:
-        if items[i] < pivote:
-                menores = []
-                mayores = []
-                for k in range(n):
-                    if items[k] < pivote:
-                        menores.append(items[k])
-                    elif items[k] > pivote:
-                        mayores.append(items[k])    
-               
+    # Fase buscar: elegir pivote y preparar índices
+    if fase == "buscar":
+        pivote = items[right]   # pivote = último elemento
+        i = left - 1
+        j = left
+        fase = "particionar"
 
-
-                fase = "swap"
-                return {"a": i, "b": n-1, "swap": True, "done": False}
-                items = menores + [pivote] +  mayores
-
-
-    return {"done": True}
+    # Fase particionar: recorrer y hacer swaps
+    if fase == "particionar":
+        if j < right:
+            if items[j] <= pivote:
+                i += 1
+                items[i], items[j] = items[j], items[i]
+                j += 1
+                return {"a": i, "b": j-1, "swap": True, "done": False}
+            else:
+                j += 1
+                return {"a": j-1, "b": j-1, "swap": False, "done": False}
+        else:
+            # colocar pivote en su lugar
+            items[i+1], items[right] = items[right], items[i+1]
+            pos = i+1
+            stack.pop()
+            # agregar subrangos izquierdo y derecho
+            stack.append((left, pos-1))
+            stack.append((pos+1, right))
+            fase = "buscar"
+            return {"a": pos, "b": right, "swap": True, "done": False}
